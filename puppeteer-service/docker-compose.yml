@@ -4,10 +4,10 @@ services:
   puppeteer-service:
     build: .
     ports:
-      - '3000:3000'
+      - '3002:3000'
     restart: always
     environment:
-      - PORT=3000
+      - PORT=3002
     # Opcional: Si necesitas establecer variables de entorno adicionales
     # env_file:
     #   - .env
