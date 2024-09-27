@@ -1,7 +1,7 @@
 # Usar una imagen base de Node.js v16
 FROM node:16-buster-slim
 
-# Instalar las dependencias necesarias para Puppeteer y yarn
+# Instalar las dependencias necesarias para Puppeteer
 RUN apt-get update && apt-get install -y \
     wget \
     libasound2 \
@@ -26,8 +26,7 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     libappindicator3-1 \
     libsecret-1-0 \
-    && rm -rf /var/lib/apt/lists/* \
-    && npm install -g yarn
+    && rm -rf /var/lib/apt/lists/*
 
 # Limpiar cualquier caché anterior de npm
 RUN rm -rf /node_modules /package-lock.json /root/.npm
