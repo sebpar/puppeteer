@@ -28,11 +28,11 @@ RUN apt-get update && apt-get install -y \
     libsecret-1-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Limpiar la cache de npm
-RUN npm cache clean --force
+# Limpiar la caché de npm y eliminar cualquier archivo previo
+RUN npm cache clean --force && rm -rf node_modules package-lock.json
 
-# Instalar Puppeteer
-RUN npm install puppeteer --unsafe-perm=true --allow-root
+# Instalar Puppeteer con flags adicionales para evitar conflictos
+RUN npm install puppeteer --unsafe-perm=true --allow-root --no-audit --legacy-peer-deps
 
 # Crear directorio de trabajo
 WORKDIR /app
@@ -41,7 +41,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalar las dependencias de la aplicación
-RUN npm install
+RUN npm install --no-audit --legacy-peer-deps
 
 # Copiar el resto de los archivos de la aplicación
 COPY . .
