@@ -10,14 +10,19 @@ app.use(express.json());
 // Reutilizamos una instancia de Puppeteer para mejorar el rendimiento
 let browser;
 (async () => {
-  browser = await puppeteer.launch({
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-blink-features=AutomationControlled'  // Ocultar Puppeteer como bot
-    ],
-    headless: true,  // Cambia a false si quieres ver el proceso en una ventana del navegador
-  });
+  try {
+    browser = await puppeteer.launch({
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-blink-features=AutomationControlled'  // Ocultar Puppeteer como bot
+      ],
+      headless: true  // Cambia a false si quieres ver el proceso en una ventana del navegador
+    });
+    console.log('Navegador Puppeteer lanzado con éxito');
+  } catch (error) {
+    console.error('Error al lanzar Puppeteer:', error);
+  }
 })();
 
 // Función para validar URL
@@ -36,6 +41,11 @@ const isImageUrl = (url) => {
 };
 
 app.post('/process-image', async (req, res) => {
+  if (!browser) {
+    console.error('El navegador Puppeteer no se ha lanzado correctamente');
+    return res.status(500).send('Error interno: El navegador no está disponible');
+  }
+
   const { imageUrl } = req.body;
 
   // Validación del parámetro imageUrl
