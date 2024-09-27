@@ -1,18 +1,35 @@
-# Usar la imagen buildkite/puppeteer y actualizar a Node.js v16
-FROM buildkite/puppeteer:latest
+# Usar una imagen base de Node.js v16
+FROM node:16-buster-slim
 
-# Añadir clave pública de Google Chrome y actualizar el repositorio
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E88979FB9B30ACF2
+# Instalar las dependencias necesarias para Puppeteer
+RUN apt-get update && apt-get install -y \
+    wget \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libnss3 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxrandr2 \
+    libxrender1 \
+    libxss1 \
+    libxtst6 \
+    xdg-utils \
+    fonts-liberation \
+    libappindicator3-1 \
+    libsecret-1-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Actualizar a la versión de Node.js v16
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean
-
-# Verificar la versión de Node.js para asegurarnos de que es la correcta
-RUN node -v
+# Instalar Puppeteer
+RUN npm install puppeteer
 
 # Crear directorio de trabajo
 WORKDIR /app
@@ -20,7 +37,7 @@ WORKDIR /app
 # Copiar los archivos de la aplicación
 COPY package*.json ./
 
-# Instalar dependencias
+# Instalar las dependencias de la aplicación
 RUN npm install
 
 # Copiar el resto de los archivos de la aplicación
