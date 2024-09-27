@@ -1,7 +1,7 @@
 # Usar una imagen base de Node.js v16
 FROM node:16-buster-slim
 
-# Instalar las dependencias necesarias para Puppeteer
+# Instalar las dependencias necesarias para Puppeteer y yarn
 RUN apt-get update && apt-get install -y \
     wget \
     libasound2 \
@@ -26,13 +26,14 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     libappindicator3-1 \
     libsecret-1-0 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g yarn
 
-# Limpiar la caché de npm y eliminar cualquier archivo previo
-RUN npm cache clean --force && rm -rf node_modules package-lock.json
+# Limpiar cualquier caché anterior de npm
+RUN rm -rf /node_modules /package-lock.json /root/.npm
 
-# Instalar Puppeteer con flags adicionales para evitar conflictos
-RUN npm install puppeteer --unsafe-perm=true --allow-root --no-audit --legacy-peer-deps
+# Instalar Puppeteer utilizando yarn
+RUN yarn add puppeteer --ignore-engines
 
 # Crear directorio de trabajo
 WORKDIR /app
@@ -40,8 +41,8 @@ WORKDIR /app
 # Copiar los archivos de la aplicación
 COPY package*.json ./
 
-# Instalar las dependencias de la aplicación
-RUN npm install --no-audit --legacy-peer-deps
+# Instalar las dependencias de la aplicación usando yarn
+RUN yarn install --ignore-engines
 
 # Copiar el resto de los archivos de la aplicación
 COPY . .
