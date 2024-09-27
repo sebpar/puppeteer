@@ -73,7 +73,7 @@ app.post('/process-image', async (req, res) => {
 
     // Esperar que Cloudflare resuelva el challenge (si lo hay)
     console.log('Esperando a que se resuelva el desafío de Cloudflare...');
-    await page.waitForTimeout(5000);  // Pausa para dar tiempo al proceso de resolución
+    await new Promise(resolve => setTimeout(resolve, 5000));  // Pausa para dar tiempo al proceso de resolución
 
     // Esperar a que la navegación esté completamente inactiva
     console.log('Esperando que la página esté completamente inactiva...');
