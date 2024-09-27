@@ -1,7 +1,7 @@
 # Usar una imagen base de Node.js v16
 FROM node:16-buster-slim
 
-# Instalar las dependencias necesarias para Puppeteer
+# Instalar las dependencias necesarias para Puppeteer y Chromium
 RUN apt-get update && apt-get install -y \
     wget \
     libasound2 \
@@ -26,6 +26,9 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     libappindicator3-1 \
     libsecret-1-0 \
+    libgbm1 \          # Biblioteca faltante
+    libgconf-2-4 \     # Otras dependencias de Chromium
+    libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Limpiar cualquier caché anterior de npm
