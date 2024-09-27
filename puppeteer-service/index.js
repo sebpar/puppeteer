@@ -1,8 +1,5 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -38,16 +35,6 @@ const isImageUrl = (url) => {
   return url.match(/\.(jpeg|jpg|gif|png|svg)$/) !== null;
 };
 
-// Función para descargar la imagen usando axios
-const downloadImage = async (url) => {
-  const response = await axios({
-    url,
-    method: 'GET',
-    responseType: 'arraybuffer', // Recibir la imagen como datos binarios
-  });
-  return response.data; // Retornar los datos de la imagen
-};
-
 app.post('/process-image', async (req, res) => {
   if (!browser) {
     console.error('El navegador Puppeteer no se ha lanzado correctamente');
@@ -72,17 +59,42 @@ app.post('/process-image', async (req, res) => {
   }
 
   try {
+    const page = await browser.newPage();
+
+    // Simular un agente de usuario real (para evitar ser detectado como bot)
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+
+    // Configurar la vista del navegador como un usuario real
+    await page.setViewport({ width: 1024, height: 1024, deviceScaleFactor: 2 });
+
+    // Intentar cargar la URL y registrar el código de estado HTTP
     console.log('Navegando a la URL:', imageUrl);
+    const response = await page.goto(imageUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     
-    // Descargar la imagen directamente desde la URL
-    const imageBuffer = await downloadImage(imageUrl);
+    const status = response.status();
+    console.log(`Código de estado HTTP: ${status}`);
 
-    // Enviar la imagen como respuesta en formato PNG
+    // Si el código de estado no es 200 (OK), registrar el error
+    if (status !== 200) {
+      throw new Error(`Error: HTTP ${status} recibido al intentar acceder a la URL`);
+    }
+
+    // Esperar que Cloudflare resuelva el challenge (si lo hay)
+    console.log('Esperando a que se resuelva el desafío (si existe)...');
+    await new Promise(resolve => setTimeout(resolve, 5000));  // Pausa para dar tiempo al proceso de resolución
+
+    // Tomar una captura de pantalla de la página
+    console.log('Tomando captura de pantalla...');
+    const buffer = await page.screenshot();
+
+    await page.close(); // Cierra la página para liberar recursos
+
+    // Enviar la imagen como respuesta en formato PNG y asegurar que sea binaria
     res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Content-Disposition', 'inline; filename="imagen.png"');
-    res.end(imageBuffer, 'binary'); // Usar res.end para asegurarse de que se envían los datos binarios correctamente
+    res.setHeader('Content-Disposition', 'inline; filename="captura.png"');
+    res.end(buffer, 'binary'); // Usar res.end para asegurarse de que se envían los datos binarios correctamente
 
-    console.log('Imagen descargada y enviada correctamente.');
+    console.log('Imagen procesada y enviada correctamente.');
   } catch (error) {
     // Registrar detalles del error
     console.error('Error en el proceso:', error.message);
