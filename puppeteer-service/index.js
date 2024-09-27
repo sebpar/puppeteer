@@ -63,15 +63,19 @@ app.post('/process-image', async (req, res) => {
     await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 2 });
 
     // Intentar cargar la URL, con espera del challenge de Cloudflare
+    console.log('Navegando a la URL:', imageUrl);
     await page.goto(imageUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
     // Esperar que Cloudflare resuelva el challenge (si lo hay)
-    await page.waitForTimeout(5000);  // Pausa para dar tiempo al proceso de resolución (ajusta el tiempo si es necesario)
+    console.log('Esperando a que se resuelva el desafío de Cloudflare...');
+    await page.waitForTimeout(5000);  // Pausa para dar tiempo al proceso de resolución
 
     // Esperar a que la navegación esté completamente inactiva
+    console.log('Esperando que la página esté completamente inactiva...');
     await page.waitForNavigation({ waitUntil: 'networkidle0' });
 
     // Tomar una captura de pantalla de la página
+    console.log('Tomando captura de pantalla...');
     const buffer = await page.screenshot();
 
     await page.close(); // Cierra la página para liberar recursos
@@ -79,8 +83,11 @@ app.post('/process-image', async (req, res) => {
     // Enviar la imagen como respuesta en formato PNG
     res.set('Content-Type', 'image/png');
     res.send(buffer);
+    console.log('Imagen procesada y enviada correctamente.');
   } catch (error) {
-    console.error(error);
+    // Registrar detalles del error
+    console.error('Error en el proceso:', error.message);
+    console.error(error.stack);
     res.status(500).send('Error al procesar la imagen o pasar el bloqueo de Cloudflare');
   }
 });
