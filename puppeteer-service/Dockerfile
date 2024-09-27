@@ -11,6 +11,9 @@ RUN apt-get update && \
     apt-get install -y nodejs && \
     apt-get clean
 
+# Verificar la versión de Node.js para asegurarnos de que es la correcta
+RUN node -v
+
 # Crear directorio de trabajo
 WORKDIR /app
 
