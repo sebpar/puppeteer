@@ -26,8 +26,8 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     libappindicator3-1 \
     libsecret-1-0 \
-    libgbm1 \          # Biblioteca faltante
-    libgconf-2-4 \     # Otras dependencias de Chromium
+    libgbm1 \
+    libgconf-2-4 \
     libgtk-3-0 \
     && rm -rf /var/lib/apt/lists/*
 
