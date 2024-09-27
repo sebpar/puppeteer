@@ -89,9 +89,11 @@ app.post('/process-image', async (req, res) => {
 
     await page.close(); // Cierra la página para liberar recursos
 
-    // Enviar la imagen como respuesta en formato PNG
-    res.set('Content-Type', 'image/png');
-    res.send(buffer);
+    // Enviar la imagen como respuesta en formato PNG y asegurar que sea binaria
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Content-Disposition', 'inline; filename="captura.png"');
+    res.end(buffer, 'binary'); // Usar res.end para asegurarse de que se envían los datos binarios correctamente
+
     console.log('Imagen procesada y enviada correctamente.');
   } catch (error) {
     // Registrar detalles del error
