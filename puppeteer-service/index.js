@@ -67,17 +67,21 @@ app.post('/process-image', async (req, res) => {
     // Configurar la vista del navegador como un usuario real
     await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 2 });
 
-    // Intentar cargar la URL, con espera del challenge de Cloudflare
+    // Intentar cargar la URL y registrar el código de estado HTTP
     console.log('Navegando a la URL:', imageUrl);
-    await page.goto(imageUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    const response = await page.goto(imageUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    
+    const status = response.status();
+    console.log(`Código de estado HTTP: ${status}`);
+
+    // Si el código de estado no es 200 (OK), registrar el error
+    if (status !== 200) {
+      throw new Error(`Error: HTTP ${status} recibido al intentar acceder a la URL`);
+    }
 
     // Esperar que Cloudflare resuelva el challenge (si lo hay)
-    console.log('Esperando a que se resuelva el desafío de Cloudflare...');
+    console.log('Esperando a que se resuelva el desafío (si existe)...');
     await new Promise(resolve => setTimeout(resolve, 5000));  // Pausa para dar tiempo al proceso de resolución
-
-    // Esperar a que la navegación esté completamente inactiva
-    console.log('Esperando que la página esté completamente inactiva...');
-    await page.waitForNavigation({ waitUntil: 'networkidle0' });
 
     // Tomar una captura de pantalla de la página
     console.log('Tomando captura de pantalla...');
@@ -93,7 +97,7 @@ app.post('/process-image', async (req, res) => {
     // Registrar detalles del error
     console.error('Error en el proceso:', error.message);
     console.error(error.stack);
-    res.status(500).send('Error al procesar la imagen o pasar el bloqueo de Cloudflare');
+    res.status(500).send(`Error al procesar la imagen: ${error.message}`);
   }
 });
 
