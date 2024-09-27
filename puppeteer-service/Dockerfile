@@ -28,8 +28,11 @@ RUN apt-get update && apt-get install -y \
     libsecret-1-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# Limpiar la cache de npm
+RUN npm cache clean --force
+
 # Instalar Puppeteer
-RUN npm install puppeteer
+RUN npm install puppeteer --unsafe-perm=true --allow-root
 
 # Crear directorio de trabajo
 WORKDIR /app
