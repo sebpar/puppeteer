@@ -8,6 +8,3 @@ services:
     restart: always
     environment:
       - PORT=3000
-    # Opcional: Si necesitas establecer variables de entorno adicionales
-    # env_file:
-    #   - .env

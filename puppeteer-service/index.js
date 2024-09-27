@@ -7,17 +7,12 @@ const port = process.env.PORT || 3000;
 // Permite recibir datos en formato JSON
 app.use(express.json());
 
-// Reutilizamos una instancia de Puppeteer para mejorar el rendimiento
+// Inicializar Puppeteer
 let browser;
 (async () => {
   try {
     browser = await puppeteer.launch({
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-blink-features=AutomationControlled'  // Ocultar Puppeteer como bot
-      ],
-      headless: true  // Cambia a false si quieres ver el proceso en una ventana del navegador
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     console.log('Navegador Puppeteer lanzado con éxito');
   } catch (error) {
