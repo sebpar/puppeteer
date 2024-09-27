@@ -1,6 +1,9 @@
 # Usar la imagen buildkite/puppeteer y actualizar a Node.js v16
 FROM buildkite/puppeteer:latest
 
+# Añadir clave pública de Google Chrome y actualizar el repositorio
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E88979FB9B30ACF2
+
 # Actualizar a la versión de Node.js v16
 RUN apt-get update && \
     apt-get install -y curl && \
