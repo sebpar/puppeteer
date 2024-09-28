@@ -65,7 +65,7 @@ app.post('/process-image', async (req, res) => {
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
 
     // Configurar la vista del navegador como un usuario real
-    await page.setViewport({ width: 1024, height: 1024, deviceScaleFactor: 2 });
+    await page.setViewport({ width: 1024, height: 1024, deviceScaleFactor: 1 });
 
     // Intentar cargar la URL y registrar el código de estado HTTP
     console.log('Navegando a la URL:', imageUrl);
